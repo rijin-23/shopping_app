@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:shopping_app/provider/cart_item.dart';
 import 'package:shopping_app/provider/product_provider.dart';
+import 'package:shopping_app/widgets/drawer_widget.dart';
 
 import '../widgets/badge.dart';
 
@@ -59,6 +60,7 @@ class _Products_OverviewState extends State<Products_Overview> {
           )
         ],
       ),
+      drawer: Drawer_widget(),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Product_grid(_showSelected),

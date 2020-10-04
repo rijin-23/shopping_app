@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/order_screen.dart';
+import 'package:shopping_app/screens/user_products_screen.dart';
+//import 'package:shopping_app/widgets/user_products.dart';
 
 import './provider/product_provider.dart';
 import './provider/order_items.dart';
@@ -37,9 +39,11 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: Products_Overview(),
         routes: {
+          'Products_Overview': (context) => Products_Overview(),
           'Page_description': (context) => Page_description(),
           'Cart_Screen': (context) => CartScreen(),
-          'Order_Screen': (context) => Order_Screen()
+          'Order_Screen': (context) => Order_Screen(),
+          'User_Products': (context) => User_products_screen()
         },
         // This trailing comma makes auto-formatting nicer for build methods.
       ),
