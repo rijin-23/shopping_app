@@ -12,18 +12,23 @@ class User_products_screen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('User Products'),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.of(context).pushNamed('Edit_products');
+              })
+        ],
       ),
       drawer: Drawer_widget(),
       body: Padding(
         padding: EdgeInsets.all(8),
-        child: Expanded(
-          child: ListView.builder(
-              itemCount: productsData.items.length,
-              itemBuilder: (_, index) {
-                return User_products(productsData.items[index].name,
-                    productsData.items[index].imageUrl);
-              }),
-        ),
+        child: ListView.builder(
+            itemCount: productsData.items.length,
+            itemBuilder: (_, index) {
+              return User_products(productsData.items[index].name,
+                  productsData.items[index].imageUrl);
+            }),
       ),
     );
   }
