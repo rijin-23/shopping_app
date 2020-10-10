@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopping_app/provider/product_info.dart';
+import 'package:shopping_app/provider/product_provider.dart';
 
 class Edit_products extends StatefulWidget {
   @override
@@ -10,6 +13,14 @@ class _Edit_productsState extends State<Edit_products> {
   final _descFocusNode = FocusNode();
   final _imageController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
+  final _form = GlobalKey<FormState>();
+  var _existingProducts = Product_info(
+    id: null,
+    name: '',
+    description: '',
+    imageUrl: '',
+    price: 0,
+  );
 
   @override
   void initState() {
@@ -34,6 +45,17 @@ class _Edit_productsState extends State<Edit_products> {
     }
   }
 
+  void _saveFormData() {
+    final _isValid = _form.currentState.validate();
+    if (!_isValid) {
+      return;
+    }
+    _form.currentState.save();
+    Provider.of<Product_provider>(context, listen: false)
+        .addProduct(_existingProducts);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,22 +63,37 @@ class _Edit_productsState extends State<Edit_products> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
+          key: _form,
           child: ListView(
             children: [
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Title',
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  labelStyle: TextStyle(color: Colors.red),
+                  labelStyle: TextStyle(color: Colors.cyan),
                 ),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_priceFocusNode);
+                },
+                onSaved: (value) {
+                  _existingProducts = Product_info(
+                      name: value,
+                      id: _existingProducts.id,
+                      description: _existingProducts.description,
+                      imageUrl: _existingProducts.imageUrl,
+                      price: _existingProducts.price);
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Plese enter this field';
+                  }
+                  return null;
                 },
               ),
               SizedBox(
@@ -66,12 +103,12 @@ class _Edit_productsState extends State<Edit_products> {
                 decoration: InputDecoration(
                   labelText: 'Price',
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  labelStyle: TextStyle(color: Colors.red),
+                  labelStyle: TextStyle(color: Colors.cyan),
                 ),
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_descFocusNode);
@@ -79,6 +116,25 @@ class _Edit_productsState extends State<Edit_products> {
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
                 focusNode: _priceFocusNode,
+                onSaved: (value) {
+                  _existingProducts = Product_info(
+                      name: _existingProducts.name,
+                      id: _existingProducts.id,
+                      description: _existingProducts.description,
+                      imageUrl: _existingProducts.imageUrl,
+                      price: double.parse(value));
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter this field';
+                  } else if (double.tryParse(value) == null) {
+                    return 'Please enter a valid amount';
+                  } else if (double.parse(value) <= 0) {
+                    return 'Please enter a valid amount';
+                  } else {
+                    return null;
+                  }
+                },
               ),
               SizedBox(
                 height: 20,
@@ -87,16 +143,30 @@ class _Edit_productsState extends State<Edit_products> {
                 decoration: InputDecoration(
                   labelText: 'Description',
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                  labelStyle: TextStyle(color: Colors.red),
+                  labelStyle: TextStyle(color: Colors.cyan),
                 ),
                 keyboardType: TextInputType.multiline,
                 maxLines: 3,
                 focusNode: _descFocusNode,
+                onSaved: (value) {
+                  _existingProducts = Product_info(
+                      name: _existingProducts.name,
+                      id: _existingProducts.id,
+                      description: value,
+                      imageUrl: _existingProducts.imageUrl,
+                      price: _existingProducts.price);
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter this field';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 20),
               Container(
@@ -117,18 +187,39 @@ class _Edit_productsState extends State<Edit_products> {
                         decoration: InputDecoration(
                           labelText: 'Image Url',
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
+                            borderSide: BorderSide(color: Colors.black),
                           ),
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
+                            borderSide: BorderSide(color: Colors.black),
                           ),
-                          labelStyle: TextStyle(color: Colors.red),
+                          labelStyle: TextStyle(color: Colors.cyan),
                         ),
                         keyboardType: TextInputType.url,
                         maxLines: 3,
                         focusNode: _imageUrlFocusNode,
                         controller: _imageController,
                         textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) {
+                          _saveFormData();
+                        },
+                        onSaved: (value) {
+                          _existingProducts = Product_info(
+                              name: _existingProducts.name,
+                              id: _existingProducts.id,
+                              description: _existingProducts.description,
+                              imageUrl: value,
+                              price: _existingProducts.price);
+                        },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter this field';
+                          } else if (!value.startsWith('http') ||
+                              !value.startsWith('https')) {
+                            return 'Enter a valid Url';
+                          } else {
+                            return null;
+                          }
+                        },
                       ),
                     ),
                   ],
@@ -137,6 +228,12 @@ class _Edit_productsState extends State<Edit_products> {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _saveFormData();
+        },
+        child: Icon(Icons.save),
       ),
     );
   }

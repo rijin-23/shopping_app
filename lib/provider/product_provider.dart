@@ -60,8 +60,20 @@ class Product_provider with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  void addProduct() {
-    //_items.add(value);
+  void addProduct(Product_info product) {
+    final _newProduct = Product_info(
+      id: DateTime.now().toString(),
+      name: product.name,
+      description: product.description,
+      imageUrl: product.imageUrl,
+      price: product.price,
+    );
+    _items.insert(0, _newProduct);
+    notifyListeners();
+  }
+
+  void deleteItem(String id) {
+    _items.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 }
