@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 import 'product_info.dart';
 
@@ -60,16 +63,65 @@ class Product_provider with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  void addProduct(Product_info product) {
-    final _newProduct = Product_info(
-      id: DateTime.now().toString(),
-      name: product.name,
-      description: product.description,
-      imageUrl: product.imageUrl,
-      price: product.price,
+  /*Future addProduct(Product_info product) {
+    const url = 'https://shopping-app-ddf3e.firebaseio.com/products.json';
+
+    return http
+        .post(
+      url,
+      body: jsonEncode(
+        {
+          'title': product.name,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'price': product.price,
+          'isFav': product.isFav
+        },
+      ),
+    )
+        .then(
+      (value) {
+        print(
+          json.decode(value.body),
+        );
+        final _newProduct = Product_info(
+          id: jsonDecode(value.body)['name'],
+          name: product.name,
+          description: product.description,
+          imageUrl: product.imageUrl,
+          price: product.price,
+        );
+        _items.insert(0, _newProduct);
+        notifyListeners();
+      },
     );
-    _items.insert(0, _newProduct);
-    notifyListeners();
+  }*/
+  makePostRequest(Product_info product) async {
+    const url = 'https://shopping-app-ddf3e.firebaseio.com/products.json';
+    await http
+        .post(
+      url,
+      body: jsonEncode(
+        {
+          'title': product.name,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'price': product.price,
+          'isFav': product.isFav
+        },
+      ),
+    )
+        .then((value) {
+      final _newProduct = Product_info(
+        id: jsonDecode(value.body)['name'],
+        name: product.name,
+        description: product.description,
+        imageUrl: product.imageUrl,
+        price: product.price,
+      );
+      _items.insert(0, _newProduct);
+      notifyListeners();
+    });
   }
 
   void deleteItem(String id) {
