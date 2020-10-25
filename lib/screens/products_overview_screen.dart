@@ -19,6 +19,27 @@ class Products_Overview extends StatefulWidget {
 class _Products_OverviewState extends State<Products_Overview> {
   var _showSelected = false;
 
+  bool _isInit = true;
+
+  bool _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Product_provider>(context).getLatestProducts().then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isInit = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,10 +82,21 @@ class _Products_OverviewState extends State<Products_Overview> {
         ],
       ),
       drawer: Drawer_widget(),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Product_grid(_showSelected),
-      ),
+      body: _isLoading
+          ? Container(
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  Text('Fetching Data...')
+                ],
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Product_grid(_showSelected),
+            ),
     );
   }
 }

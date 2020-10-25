@@ -46,7 +46,7 @@ class _Edit_productsState extends State<Edit_products> {
     }
   }
 
-  void _saveFormData() {
+  void _saveFormData() async {
     final _isValid = _form.currentState.validate();
     if (!_isValid) {
       return;
@@ -55,11 +55,31 @@ class _Edit_productsState extends State<Edit_products> {
     setState(() {
       _isLoading = true;
     });
-    Provider.of<Product_provider>(context, listen: false)
-        .makePostRequest(_existingProducts)
-        .then(
-          (_) => Navigator.of(context).pop(),
-        );
+
+    try {
+      await Provider.of<Product_provider>(context, listen: false)
+          .makePostRequest(_existingProducts);
+    } catch (error) {
+      await showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text('An error occured'),
+              content: Text('Something went wrong'),
+              actions: [
+                FlatButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text('Okay'),
+                ),
+              ],
+            );
+          });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -189,10 +209,9 @@ class _Edit_productsState extends State<Edit_products> {
                             width: 100,
                             child: _imageController.text.isEmpty
                                 ? Text('Enter a URL')
-                                : FittedBox(
-                                    child: Image.network(
+                                : Image.network(
                                     _imageController.text,
-                                  )),
+                                  ),
                           ),
                           Expanded(
                             child: TextFormField(
