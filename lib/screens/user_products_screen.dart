@@ -6,6 +6,11 @@ import 'package:shopping_app/widgets/user_products.dart';
 import '../provider/product_provider.dart';
 
 class User_products_screen extends StatelessWidget {
+  Future<void> _refreshData(BuildContext context) async {
+    await Provider.of<Product_provider>(context, listen: false)
+        .getLatestProducts();
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Product_provider>(context);
@@ -21,16 +26,19 @@ class User_products_screen extends StatelessWidget {
         ],
       ),
       drawer: Drawer_widget(),
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: ListView.builder(
-            itemCount: productsData.items.length,
-            itemBuilder: (_, index) {
-              return User_products(
-                  productsData.items[index].name,
-                  productsData.items[index].imageUrl,
-                  productsData.items[index].id);
-            }),
+      body: RefreshIndicator(
+        onRefresh: () => _refreshData(context),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: ListView.builder(
+              itemCount: productsData.items.length,
+              itemBuilder: (_, index) {
+                return User_products(
+                    productsData.items[index].name,
+                    productsData.items[index].imageUrl,
+                    productsData.items[index].id);
+              }),
+        ),
       ),
     );
   }

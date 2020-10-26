@@ -88,7 +88,7 @@ class Product_provider with ChangeNotifier {
   }
 
   Future<void> makePostRequest(Product_info product) async {
-    const url = 'https://shopping-app-ddf3e.firebaseio.com/products';
+    const url = 'https://shopping-app-ddf3e.firebaseio.com/products.json';
     try {
       final value = await http.post(
         url,
