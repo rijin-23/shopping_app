@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 class Product_info with ChangeNotifier {
   final String id;
@@ -16,8 +18,25 @@ class Product_info with ChangeNotifier {
       @required this.price,
       this.isFav = false});
 
-  void selectFav() {
+  void selectFav() async {
+    final fav = isFav;
     isFav = !isFav;
     notifyListeners();
+    try {
+      var url = 'https://shopping-app-ddf3e.firebaseio.com/products/$id.json';
+      final response = await http.patch(
+        url,
+        body: jsonEncode(
+          {'isFav': isFav},
+        ),
+      );
+      if (response.statusCode > 400) {
+        isFav = fav;
+        notifyListeners();
+      }
+    } catch (error) {
+      isFav = fav;
+      notifyListeners();
+    }
   }
 }

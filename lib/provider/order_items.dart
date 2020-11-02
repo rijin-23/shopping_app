@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'cart_item.dart';
 
@@ -18,13 +20,33 @@ class Order with ChangeNotifier {
     return [..._products];
   }
 
-  void addProduct(List<CartItem> cartProducts, double total) {
+  void addProduct(List<CartItem> cartProducts, double total) async {
+    const url = 'https://shopping-app-ddf3e.firebaseio.com/orders.json';
+    final timeStamp = DateTime.now();
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(
+        {
+          'amount': total,
+          'time': timeStamp.toIso8601String(),
+          'order products': cartProducts
+              .map((e) => {
+                    'id': e.id,
+                    'title': e.name,
+                    'amount': e.price,
+                    'quantity': e.quantity
+                  })
+              .toList()
+        },
+      ),
+    );
     _products.insert(
       0,
       Orderitem(
-          id: DateTime.now().toString(),
+          id: jsonDecode(response.body)['name'],
           amount: total,
-          dateTime: DateTime.now(),
+          dateTime: timeStamp,
           products: cartProducts),
     );
     notifyListeners();
