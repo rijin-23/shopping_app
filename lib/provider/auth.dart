@@ -1,26 +1,36 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:shopping_app/models/httpException.dart';
 
 class Auth with ChangeNotifier {
-  String token;
-  String userId;
-  DateTime expirytime;
+  String _token;
+  DateTime _expiryDate;
+  String _userId;
 
   Future<void> _authenticate(
-      String email, String password, String urlPart) async {
+      String email, String password, String urlSegment) async {
     final url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:$urlPart?key=AIzaSyDQkNGuOtS4SG-fIb5NRA61cR236waLr-0';
-    final response = await http.post(
-      url,
-      body: jsonEncode(
-        {'email': email, 'password': password, 'returnSecureToken': true},
-      ),
-    );
-    print(
-      jsonDecode(response.body),
-    );
+        'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyDQkNGuOtS4SG-fIb5NRA61cR236waLr-0';
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode(
+          {
+            'email': email,
+            'password': password,
+            'returnSecureToken': true,
+          },
+        ),
+      );
+      final responseData = json.decode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpExceptions(responseData['error']['message']);
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   Future<void> signup(String email, String password) async {

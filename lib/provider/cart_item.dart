@@ -41,7 +41,7 @@ class CartItemProvider with ChangeNotifier {
       _items.putIfAbsent(
           productId,
           () =>
-              CartItem(id: productId, price: price, name: title, quantity: 1));
+              CartItem(id: productId, price: price, name: title, quantity: 1),);
       print('Product added');
       print(_items.length);
     }
