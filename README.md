@@ -1,6 +1,16 @@
-# shopping_app
+# Shopping Application
 
-A new Flutter project.
+An application where users can shop products.
+
+## General Info
+
+This is an application made for users where users can buy and sell products.
+
+## Technologies
+This project uses following technologies:
+* Flutter
+* Dart
+* Firebase Real-Time Database
 
 ## Getting Started
 
